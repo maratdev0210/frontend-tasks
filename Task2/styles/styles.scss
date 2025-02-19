@@ -1,0 +1,37 @@
+$font-stack: Helvetica, sans-serif;
+$button-color: red;
+$alt-button-color: black;
+$alt-text: white;
+$text-color: grey;
+$border-color: blue;
+/*
+body {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+*/
+
+p {
+  font: $font-stack;
+  color: $text-color;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  padding-top: 25px;
+
+  button {
+    border-width: 2px;
+    border-color: $border-color;
+    width: 20%;
+    height: 35px;
+    font-size: 24px;
+    background-color: $button-color;
+
+    &:hover {
+      background-color: $alt-button-color;
+      color: $alt-text;
+    }
+  }
+}

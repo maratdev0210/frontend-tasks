@@ -1,0 +1,30 @@
+/*
+body {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+*/
+p {
+  font: Helvetica, sans-serif;
+  color: grey;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  padding-top: 25px;
+}
+div button {
+  border-width: 2px;
+  border-color: blue;
+  width: 40%;
+  height: 35px;
+  font-size: 24px;
+  background-color: red;
+}
+div button:hover {
+  background-color: black;
+  color: white;
+}
+
+/*# sourceMappingURL=style.css.map */
