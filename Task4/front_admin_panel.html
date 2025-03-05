@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Management API</title>
+    <style>
+      .chat-container {
+        width: 600px;
+        margin: 20px auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+      #messages {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #eee;
+        margin-bottom: 10px;
+        padding: 10px;
+      }
+      .message {
+        margin: 5px;
+        padding: 8px;
+        border-radius: 5px;
+        max-width: 80%;
+      }
+      .received {
+        background: #e3f2fd;
+        margin-right: auto;
+      }
+      .sent {
+        background: #c8e6c9;
+        margin-left: auto;
+      }
+      .status {
+        text-align: center;
+        color: #666;
+        font-size: 0.9em;
+      }
+      .input-area {
+        display: flex;
+        gap: 10px;
+      }
+      input {
+        flex: 1;
+        padding: 8px;
+      }
+      button {
+        padding: 8px 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Управление товарами</h1>
+    <div class="chat-container">
+      <div id="queueStatus"></div>
+      <div id="messages"></div>
+      <div class="input-area">
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Type your message..."
+        />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="acceptNextClient()">Accept Next Client</button>
+      </div>
+    </div>
+
+    <h2>Получить список товаров</h2>
+    <button onclick="getGoods()">Загрузить товары</button>
+    <pre id="goodsList"></pre>
+
+    <h2>Добавить товар</h2>
+    <form id="addGoodForm">
+      <input type="text" id="name" placeholder="Название" required />
+      <input type="number" id="cost" placeholder="Стоимость" required />
+      <input type="text" id="description" placeholder="Описание" required />
+      <input type="text" id="category" placeholder="Категория" required />
+      <button type="submit">Добавить</button>
+    </form>
+    <pre id="addResponse"></pre>
+
+    <h2>Обновить товар</h2>
+    <form id="updateGoodForm">
+      <input type="number" id="updateId" placeholder="ID товара" required />
+      <input type="text" id="updateName" placeholder="Новое название" />
+      <input type="number" id="updateCost" placeholder="Новая стоимость" />
+      <input type="text" id="updateDescription" placeholder="Новое описание" />
+      <input type="text" id="updateCategory" placeholder="Новая категория" />
+      <button type="submit">Обновить</button>
+    </form>
+    <pre id="updateResponse"></pre>
+
+    <h2>Удалить товар</h2>
+    <input type="number" id="deleteId" placeholder="ID товара" required />
+    <button onclick="deleteGood()">Удалить</button>
+    <pre id="deleteResponse"></pre>
+
+    <script>
+      const API_URL = "http://localhost:3000/goods";
+
+      function getGoods() {
+        fetch(API_URL)
+          .then((response) => response.json())
+          .then(
+            (data) =>
+              (document.getElementById("goodsList").textContent =
+                JSON.stringify(data, null, 2))
+          )
+          .catch((error) => console.error("Ошибка:", error));
+      }
+
+      document
+        .getElementById("addGoodForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const name = document.getElementById("name").value;
+          const cost = document.getElementById("cost").value;
+          const description = document.getElementById("description").value;
+          const category = document.getElementById("category").value;
+
+          fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, cost, description, category }),
+          })
+            .then((response) => response.json())
+            .then(
+              (data) =>
+                (document.getElementById("addResponse").textContent =
+                  JSON.stringify(data, null, 2))
+            )
+            .catch((error) => console.error("Ошибка:", error));
+        });
+
+      document
+        .getElementById("updateGoodForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const id = document.getElementById("updateId").value;
+          const name = document.getElementById("updateName").value.trim();
+          const cost = document.getElementById("updateCost").value.trim();
+          const description = document
+            .getElementById("updateDescription")
+            .value.trim();
+          const category = document
+            .getElementById("updateCategory")
+            .value.trim();
+
+          // Формируем объект только с заполненными полями
+          const updateData = {};
+          if (name) updateData.name = name;
+          if (cost) updateData.cost = Number(cost);
+          if (description) updateData.description = description;
+          if (category) updateData.category = category;
+
+          // Если нет данных для обновления, не отправляем запрос
+          if (Object.keys(updateData).length === 0) {
+            alert("Вы не заполнили ни одно поле для обновления!");
+            return;
+          }
+
+          fetch(`${API_URL}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updateData),
+          })
+            .then((response) => response.json())
+            .then(
+              (data) =>
+                (document.getElementById("updateResponse").textContent =
+                  JSON.stringify(data, null, 2))
+            )
+            .catch((error) => console.error("Ошибка:", error));
+        });
+
+      function deleteGood() {
+        const id = document.getElementById("deleteId").value;
+
+        fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+        })
+          .then((response) => response.json())
+          .then(
+            (data) =>
+              (document.getElementById("deleteResponse").textContent =
+                JSON.stringify(data, null, 2))
+          )
+          .catch((error) => console.error("Ошибка:", error));
+      }
+
+      const ws = new WebSocket("ws://localhost:8080/?role=admin");
+      const messages = document.getElementById("messages");
+      const input = document.getElementById("messageInput");
+      const queueStatus = document.getElementById("queueStatus");
+      let currentClient = null;
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "status") {
+          queueStatus.textContent = `Clients in queue: ${data.queueLength}`;
+        } else if (data.type === "message") {
+          appendMessage(data.content, "received", data.from);
+        }
+      };
+
+      function acceptNextClient() {
+        ws.send(JSON.stringify({ type: "accept" }));
+      }
+
+      function sendMessage() {
+        const message = input.value;
+        if (message.trim() && currentClient) {
+          ws.send(
+            JSON.stringify({
+              type: "message",
+              to: currentClient,
+              content: message,
+            })
+          );
+          appendMessage(message, "sent");
+          input.value = "";
+        }
+      }
+
+      function appendMessage(text, type, clientId = null) {
+        if (clientId) currentClient = clientId;
+        const div = document.createElement("div");
+        div.className = `message ${type}`;
+        div.textContent = text;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+      }
+    </script>
+  </body>
+</html>

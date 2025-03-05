@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "Hilton",
+    "cost": 5000,
+    "description": "The best hotel in Rome",
+    "category": "hotels"
+  },
+  {
+    "id": 2,
+    "name": "wine",
+    "cost": 500,
+    "description": "Red wine",
+    "category": "drinks"
+  },
+  {
+    "id": 3,
+    "name": "apple juice",
+    "cost": 200,
+    "description": "new addition for a drink",
+    "category": "drinks"
+  },
+  {
+    "id": 4,
+    "name": "Four Seasons",
+    "cost": 3000,
+    "description": "Modern hotel in the center of Moscow",
+    "category": "hotels"
+  },
+  {
+    "id": 5,
+    "name": "G wagon",
+    "cost": "200000000",
+    "description": "New G wagon 2025 edition",
+    "category": "cars"
+  },
+  {
+    "id": 6,
+    "name": "champagne",
+    "cost": "10000",
+    "description": "for rich people",
+    "category": "drinks"
+  },
+  {
+    "id": 7,
+    "name": "spaghetti ",
+    "cost": 0,
+    "description": "макароны",
+    "category": "food"
+  }
+]

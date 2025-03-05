@@ -1,0 +1,89 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.11
+servers:
+  - url: http://localhost:3000
+paths:
+  /goods:
+    get:
+      summary: Получить список товаров
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    cost:
+                      type: integer
+                    description:
+                      type: string
+
+    post:
+      summary: Создать новый товар
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                cost:
+                  type: integer
+                description:
+                  type: string
+                category:
+                  type: string
+      responses:
+        '201':
+          description: Задача создана
+  
+  /goods/{id}:
+    put:
+      summary: Обновить информацию о товаре по ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID товара
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                cost:
+                  type: integer
+                description:
+                  type: string
+                category:
+                  type: string
+      responses:
+        '200':
+          description: Товар обновлен
+    
+    delete:
+      summary: Удалить товар по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID товара, который нужно удалить
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Товар успешно удален
